@@ -11,6 +11,8 @@ app.use(express.json()) //parsear JSON en las solicitudes
 
 dbConnect() //conexión a la BD
 
+app.use("/api", require("./routes"))
+
 const PORT = process.env.PORT || 3000
 
 app.listen(PORT, () => {

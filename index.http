@@ -1,0 +1,47 @@
+### Registro de nuevo usuario
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "userTest@gmail.com",
+    "password": "12345678"
+}
+
+###Iniciar sesión con usuario registrado
+POST http://localhost:3000/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "userTest@gmail.com",
+    "password": "123456789"
+}
+
+###Obtener la lista de usuarios
+GET http://localhost:3000/api/users
+
+###Obtener usuario por ID
+GET http://localhost:3000/api/users/67dad09d7253bfb065eff01b
+
+###Actualizar datos de un usuario
+PUT http://localhost:3000/api/users/67dad09d7253bfb065eff01b
+Content-Type: application/json
+
+{
+    "name": "Juan",
+    "lastname": "Fernandez",
+    "nif": "12345678X"
+}
+
+###Eliminar usuario por ID
+DELETE http://localhost:3000/api/users/67dad0d7253bfb065eff01b
+
+###Enviar email
+POST http://localhost:3000/api/email/send
+Content-Type: application/json
+
+{
+    "subject": "Prueba de correo",
+    "text": "Este correo solo llegará a gente con calvicie severa.",
+    "to": "oscarcorrochanolopez@gmail.com",
+    "from": "oscarcorrochanolopez@gmail.com"
+}
