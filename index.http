@@ -3,8 +3,8 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "email": "userTest@gmail.com",
-    "password": "12345678"
+    "email": "oscar@gmail.com",
+    "password": "12345678910"
 }
 
 ###Iniciar sesión con usuario registrado
@@ -12,8 +12,8 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "userTest@gmail.com",
-    "password": "123456789"
+    "email": "userdemo@ejemplo.com",
+    "password": "$2b$10$/WmVzuaTz3BkJU1.RKEfX.p2OZB8tOYPTcgoTzLv6fftZFdjqgHa6"
 }
 
 ###Obtener la lista de usuarios
@@ -35,6 +35,15 @@ Content-Type: application/json
 ###Eliminar usuario por ID
 DELETE http://localhost:3000/api/users/67dad0d7253bfb065eff01b
 
+
+###Validar el email con código
+POST http://localhost:3000/api/auth/validate
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZGJiODIyYzQ5YzdiNWVmMDY0YmIyNyIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQyNDUyNzcwLCJleHAiOjE3NDI0NTk5NzB9.9YFps5suauCv-FfiE05-eMWAfhSWUGSba3TJFpzZILw
+
+{
+    "code": "505683"
+}
 ###Enviar email
 POST http://localhost:3000/api/email/send
 Content-Type: application/json

@@ -67,4 +67,31 @@ const loginCtrl = async(req, res) => {
     }
 }
 
-module.exports = {registerCtrl, loginCtrl}
+const validateEmailCtrl = async(req, res) => {
+    try {
+        const {code} = req.body //codigo ingresado por el usuario para validar
+        const userId = req.user.id //obtenemos el id del usuarios
+
+        const user = await User.findById(userId)
+
+        if(!user)   //no existe user
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        if(user.status == "verified") //usuario ya verificado
+            return handleHttpError(res, "USER_ALREADY_VERIFIED", 400)
+
+        if(user.verificationCode != code) //codigo ingresado erroneo
+            return handleHttpError(res, "INVALID_VERIFICATION_COIDE", 401)
+
+        //si el código es correcto, existe el user y no esta verificado actualizamos:
+        user.status = "verified"
+        user.verificationCode = null
+        await user.save()
+
+        res.json({message: "EMAIL_VERIFIED"})
+    } catch(error) {
+        handleHttpError(res, "ERROR_VALIDATING_EMAIL", 500)
+    }
+}
+
+module.exports = {registerCtrl, loginCtrl, validateEmailCtrl}
