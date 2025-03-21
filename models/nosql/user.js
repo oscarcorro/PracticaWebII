@@ -12,6 +12,10 @@ const UserSchema = new mongoose.Schema(
         nif: { //nif del usuario string
             type: String
         },
+        isAutonomous: { //el user es autonomo o no
+            type: Boolean,
+            default: false
+        },
         company: { //compañia/datos si es autonomo con nombre cif y direccion
             name: String,
             cif: String,

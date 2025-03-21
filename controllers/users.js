@@ -9,7 +9,7 @@ const getUsers = async (req, res) => {
     } catch (error) {
         handleHttpError(res, "ERROR_GET_USERS", 500);
     }
-};
+}
 //función para obtener un usuario a través del id
 const getUser = async (req, res) => {
     try {
@@ -20,7 +20,7 @@ const getUser = async (req, res) => {
     } catch (error) {
         handleHttpError(res, "ERROR_GET_USER", 500);
     }
-};
+}
 //función para actualizar la info de un user
 const updateUser = async (req, res) => {
     try {
@@ -31,7 +31,7 @@ const updateUser = async (req, res) => {
     } catch (error) {
         handleHttpError(res, "ERROR_UPDATE_USER", 500);
     }
-};
+}
 //función para eliminar un usuario (soft-delete de mongoose)
 const deleteUser = async (req, res) => {
     try {
@@ -42,6 +42,33 @@ const deleteUser = async (req, res) => {
     } catch (error) {
         handleHttpError(res, "ERROR_DELETE_USER", 500);
     }
-};
+}
 
-module.exports = { getUsers, getUser, updateUser, deleteUser }; //exportamos todas las funciones
+//ACtualizar datos de la compañia
+const updateUserCompanyData = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const { name, cif, address } = req.body
+
+        const user = await User.findById(userId)
+        if (!user) 
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        let companyData
+        if(user.isAutonomous){
+            //si el usuario es autónomo, la compañía usa sus datos personales
+            companyData = { name: user.name, cif: user.nif, address: "Dirección autónoma" };
+        }else{
+            companyData = {name, cif, address}
+        }
+
+        user.company = companyData
+        await user.save()
+
+        res.json({ message: "Company data updated successfully!", user })
+    }catch(error){
+        handleHttpError(res, "ERROR_UPDATING_COMPANY_DATA", 500)
+    }
+}
+
+module.exports = { getUsers, getUser, updateUser, deleteUser, updateUserCompanyData } //exportamos todas las funciones

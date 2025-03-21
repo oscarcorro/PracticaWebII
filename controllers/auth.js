@@ -17,12 +17,16 @@ const registerCtrl = async(req, res) => {
 
         const password = await encrypt(req.password) //ciframos la pass
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString(); //codigo de verifiacion aleatorio de 6 digitos
+        //si el usuario es autonomo se autoasignan los datos personales a la compañía
+        const companyData = req.isAutonomous ? {name: req.name, cif: req.nif, address: "Dirección autónomo"} : {}
+        console.log("Datos de la empresa: ", companyData)
         //creamos un nuevo usuario
         const newUser = await User.create({
             ...req,
             password,
             verificationCode,
-            status: "pending"
+            status: "pending",
+            company: companyData
         })
 
         newUser.set("password", undefined, {strict: false}) //no mostrar la contraseña

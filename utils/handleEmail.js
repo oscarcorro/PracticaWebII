@@ -31,9 +31,9 @@ const createTransporter = async () => {
             clientSecret: process.env.CLIENT_SECRET,
             refreshToken: process.env.REFRESH_TOKEN
         }
-    });
+    })
     return transporter;
-};
+}
 
 const sendEmail = async (emailOptions) => {
     try {
@@ -42,6 +42,6 @@ const sendEmail = async (emailOptions) => {
     } catch (e) {
         console.log(e)
     }
-};
+}
     
 module.exports = { sendEmail }
