@@ -1,6 +1,6 @@
 const express = require("express") //framework servidores
-const { getUsers, getUser, updateUser, deleteUser, updateUserCompanyData } = require("../controllers/users") //funciones 
-const { validatorPersonalData, validatorCompanyData } = require("../validators/userValidator");
+const { getUsers, getUser, updateUser, deleteUser, updateUserCompanyData, getProfile, deleteProfile, inviteUser } = require("../controllers/users") //funciones 
+const { validatorPersonalData, validatorCompanyData } = require("../validators/userValidator")
 const {authMiddleware} = require("../middleware/authMiddleware")
 const {uploadMiddleware} = require("../middleware/uploadLogo")
 const User = require("../models/nosql/user")
@@ -10,8 +10,11 @@ const User = require("../models/nosql/user")
 const router = express.Router();
 //rutas: 
 router.get("/", getUsers); //obtener todos los usuarios
+//obtener usuario a partir del tokan
+router.get("/profile", authMiddleware, getProfile)
 router.get("/:id", getUser); //obtener usuario por id
 router.put("/:id", authMiddleware, validatorPersonalData, updateUser); //modificar usuario por id
+router.delete("/profile", authMiddleware, deleteProfile);
 router.delete("/:id", deleteUser); //eliminar (soft) usuario por id
 
 //Punto 4 PUT y PATCH
@@ -36,5 +39,6 @@ router.patch("/update-logo", authMiddleware, uploadMiddleware.single("logo"), as
     }
 })
 
+router.post("/invite", authMiddleware, inviteUser)
 
 module.exports = router; 

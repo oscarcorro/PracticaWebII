@@ -1,5 +1,7 @@
 const { handleHttpError } = require("../utils/handleError") //manejo de errores
 const User = require("../models/nosql/user") //modelo de un usuario en la BD
+const { tokenSign } = require("../utils/handleJwt")
+const { encrypt } = require("../utils/handlePassword")
 
 //función para obtener todos los usuarios
 const getUsers = async (req, res) => {
@@ -71,4 +73,84 @@ const updateUserCompanyData = async (req, res) => {
     }
 }
 
-module.exports = { getUsers, getUser, updateUser, deleteUser, updateUserCompanyData } //exportamos todas las funciones
+//Obtener usuario a partir del JWT
+const getProfile = async(req, res) => {
+    try{
+        const userId = req.user.id //Sacamos el id del token
+        const user = await User.findById(userId).select("-password")
+        if(!user)
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        res.json(user)
+    }catch(error){
+        console.error(error)
+        handleHttpError(res, "ERROR_GET_PROFILE", 500)
+    }
+}
+
+//delete hard o soft según un parámetros
+const deleteProfile = async(req, res) => {
+    try{
+        const userId = req.user.id
+        const softDelete = req.query.soft !== "false" //si es false hard delete
+
+        const user = await User.findById(userId)
+        if(!user) 
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        if(softDelete){
+            await user.delete() // soft delete
+            res.json({ message: "Usuario eliminado (soft delete)" })
+        }else{
+            await User.findByIdAndDelete(userId) //hard delete
+            res.json({ message: "Usuario eliminado permanentemente (hard delete)" })
+        }
+    }catch(error){
+        console.error(error)
+        handleHttpError(res, "ERROR_DELETE_PROFILE", 500)
+    }
+}
+
+//invitar a un compañero
+const inviteUser = async(req, res) => {
+    try{
+        const userId = req.user.id
+        const {email} = req.body
+
+        const inviter = await User.findById(userId)
+        if(!inviter) 
+            return handleHttpError(res, "INVITER_NOT_FOUND", 404)
+
+        const existingUser = await User.findOne({email})
+        if (existingUser)
+            return handleHttpError(res, "EMAIL_ALREADY_EXISTS", 409)
+
+        const tempPassword = Math.random().toString(36).slice(-8) //contraseña temporal
+        const hashedPassword = await encrypt(tempPassword)
+
+        const newUser = await User.create({
+            email,
+            password: hashedPassword,
+            role: "guest", //rol de invitad
+            company: inviter.company //misma compañía que el que invita
+        })
+
+        newUser.set("password", undefined, {strict: false})
+
+        const token = await tokenSign(newUser)
+
+        res.json({
+            message: "Usuario invitado creado correctamente",
+            user: newUser,
+            tempPassword,
+            token
+        })
+    }catch(error){
+        console.error(error)
+        handleHttpError(res, "ERROR_INVITE_USER", 500)
+    }
+}
+
+
+
+module.exports = { getUsers, getUser, updateUser, deleteUser, updateUserCompanyData, getProfile, deleteProfile, inviteUser} //exportamos todas las funciones

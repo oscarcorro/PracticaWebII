@@ -4,6 +4,7 @@ const {encrypt, compare} = require("../utils/handlePassword") //funciones para c
 const {tokenSign} = require("../utils/handleJwt") //función para firmar y generar el token
 const User = require("../models/nosql/user") //modelo del usuario en mongoDB
 const {handleHttpError} = require("../utils/handleError") //manejo de errores
+const jwt = require("jsonwebtoken")
 
 //Controlador para registrar un nuevo usuario
 const registerCtrl = async(req, res) => {
@@ -98,4 +99,44 @@ const validateEmailCtrl = async(req, res) => {
     }
 }
 
-module.exports = {registerCtrl, loginCtrl, validateEmailCtrl}
+//recuperar contraseña con token temporal
+const recoverPassword = async(req, res) => {
+    try{
+        const {email} = req.body
+        const user = await User.findOne({email})
+        if(!user)
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        const token = jwt.sign(
+            {id: user._id},
+            process.env.JWT_SECRET,
+            {expiresIn: "10m"}
+        )
+
+        res.json({ message: "Token para recuperar contraseña generado", token })
+    } catch(error){
+        console.error(error)
+        handleHttpError(res, "ERROR_RECOVER_PASSWORD", 500)
+    }
+}
+
+//Cambiar contraseña
+const resetPassword = async(req, res) => {
+    try {
+        const {token, newPassword} = req.body
+        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const user = await User.findById(decoded.id)
+        if(!user) 
+            return handleHttpError(res, "USER_NOT_FOUND", 404)
+
+        user.password = await encrypt(newPassword)
+        await user.save()
+
+        res.json({ message: "Contraseña actualizada correctamente" })
+    } catch(error){
+        console.error(error)
+        handleHttpError(res, "ERROR_RESET_PASSWORD", 500)
+    }
+}
+
+module.exports = {registerCtrl, loginCtrl, validateEmailCtrl, recoverPassword, resetPassword}

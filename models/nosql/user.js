@@ -39,7 +39,7 @@ const UserSchema = new mongoose.Schema(
         },
         role: { //rol del usuario string admin o user (por defecto)
             type: String,
-            enum: ["user", "admin"],
+            enum: ["user", "admin", "guest"],
             default: "user"
         },
         verificationCode: { //codigo de 6 digitos para verificar el email

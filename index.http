@@ -3,9 +3,12 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "email": "oscar2@gmail.com",
+    "email": "oscar4@gmail.com",
     "password": "123456789",
-    "isAutonomous": true
+    "name": "Oscar",
+    "lastname": "Corrochano",
+    "nif": "12345679X",
+    "isAutonomous": false
 }
 
 ###Iniciar sesión con usuario registrado
@@ -13,8 +16,8 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "prueba1@gmail.com",
-    "password": "12345678"
+    "email": "oscar4@gmail.com",
+    "password": "nuevacontraseña123"
 }
 
 ###Obtener la lista de usuarios
@@ -94,5 +97,45 @@ Content-Type: image/png
 
 < ./logo1.png
 --boundary123--
+
+
+###Obtener usuario a partir del token
+GET http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3YTA1YTUxMGJlYTBhZmI5OWZlZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQzNDIwMjcxLCJleHAiOjE3NDM0Mjc0NzF9.RtdxXcrw-2kjKhpGUYBRhZBPS61zEfq1FnhPy5D2IJ0
+
+### Eliminar usuario (soft delete por defecto)
+DELETE http://localhost:3000/api/users/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3YTA1YTUxMGJlYTBhZmI5OWZlZSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQzNDIwMjcxLCJleHAiOjE3NDM0Mjc0NzF9.RtdxXcrw-2kjKhpGUYBRhZBPS61zEfq1FnhPy5D2IJ0
+
+### Eliminar usuario (hard delete)
+DELETE http://localhost:3000/api/users/profile?soft=false
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3ZDZhODg3OTE4NTNhYzNjOTY0ZCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQzNDIwNzc4LCJleHAiOjE3NDM0Mjc5Nzh9.8Ep4C0C6aIQn2Ql9EHLD3obHeCiaqOpFzDvHCy05t1w
+
+###Recuperar contraseña
+POST http://localhost:3000/api/auth/recover-password
+Content-Type: application/json
+
+{
+    "email": "oscar4@gmail.com"
+}
+
+### Resetear contraseña
+POST http://localhost:3000/api/auth/reset-password
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3ZWNjNzBmNWE0NmQyYjM5YmUxMSIsImlhdCI6MTc0MzQyMTE0NCwiZXhwIjoxNzQzNDIxNzQ0fQ.dqcz9XUyLwsFedV-M3wmL1g8v6CJzsxy3tiEH6j16Q8",
+    "newPassword": "nuevacontraseña123"
+}
+
+### Invitar a un usuario guest
+POST http://localhost:3000/api/users/invite
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZWE3ZWNjNzBmNWE0NmQyYjM5YmUxMSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzQzNDIxNzY0LCJleHAiOjE3NDM0Mjg5NjR9.HCWadjLW-YdbvpZ8xOkHA4fm8CY2EQcwqFzPSTK2FyY
+
+{
+    "email": "invitado@gmail.com"
+}
+
 
 
